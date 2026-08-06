@@ -32,7 +32,7 @@ class ClouderaClient:
 
     def post(self, path: str, data: Dict | None = None) -> Dict:
         r = self.session.post(f"{self.base}{path}", json=data,
-                             timeout=self.timeout, verify=self.verify)
+                              timeout=self.timeout, verify=self.verify)
         r.raise_for_status()
         return r.json()
 
