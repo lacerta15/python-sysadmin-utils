@@ -22,3 +22,11 @@ def test_uptime_command(capsys):
     out = capsys.readouterr().out
     assert "up " in out
     assert rc == 0
+
+
+def test_sensors_command(capsys):
+    from sysadmin_utils.cli import main
+    rc = main(["sensors"])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert out.strip() != ""

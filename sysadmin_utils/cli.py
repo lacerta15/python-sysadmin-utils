@@ -6,7 +6,7 @@ import json
 import sys
 
 from . import __version__
-from .system import health, processes, uptime
+from .system import health, processes, uptime, sensors
 from .network import connectivity, ssl_check, ports as netports
 from .monitoring import http_check
 
@@ -57,6 +57,17 @@ def _cmd_uptime(args) -> int:
     return 0
 
 
+def _cmd_sensors(args) -> int:
+    temps = sensors.temperatures()
+    if not temps:
+        print("no temperature sensors available")
+        return 0
+    for chip, entries in temps.items():
+        for e in entries:
+            print(f"{chip:20s} {e['label']:20s} {e['current']:.1f}C")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sysadmin", description="Sysadmin utilities toolkit")
@@ -92,6 +103,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     u = sub.add_parser("uptime", help="show system uptime")
     u.set_defaults(func=_cmd_uptime)
+
+    se = sub.add_parser("sensors", help="show hardware temperature sensors")
+    se.set_defaults(func=_cmd_sensors)
 
     return parser
 
