@@ -30,3 +30,13 @@ def test_sensors_command(capsys):
     out = capsys.readouterr().out
     assert rc == 0
     assert out.strip() != ""
+
+
+def test_logscan_command(tmp_path, capsys):
+    from sysadmin_utils.cli import main
+    log = tmp_path / "app.log"
+    log.write_text("INFO ok\nERROR boom\nERROR boom\n")
+    rc = main(["logscan", str(log)])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "ERROR" in out

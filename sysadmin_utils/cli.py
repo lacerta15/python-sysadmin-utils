@@ -9,6 +9,7 @@ from . import __version__
 from .system import health, processes, uptime, sensors
 from .network import connectivity, ssl_check, ports as netports
 from .monitoring import http_check
+from .logs import analyzer
 
 
 def _cmd_health(args) -> int:
@@ -68,6 +69,17 @@ def _cmd_sensors(args) -> int:
     return 0
 
 
+def _cmd_logscan(args) -> int:
+    result = analyzer.analyze(args.path, top=args.top)
+    print(f"file: {result['file']}  ({result['total_lines']} lines)")
+    print("levels:", result["levels"])
+    if result["top_errors"]:
+        print("top errors:")
+        for line, count in result["top_errors"]:
+            print(f"  {count:>4}x  {line[:100]}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sysadmin", description="Sysadmin utilities toolkit")
@@ -106,6 +118,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     se = sub.add_parser("sensors", help="show hardware temperature sensors")
     se.set_defaults(func=_cmd_sensors)
+
+    ls = sub.add_parser("logscan", help="analyze a log file for errors")
+    ls.add_argument("path")
+    ls.add_argument("--top", type=int, default=5)
+    ls.set_defaults(func=_cmd_logscan)
 
     return parser
 
