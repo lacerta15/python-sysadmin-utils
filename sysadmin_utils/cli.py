@@ -7,7 +7,8 @@ import sys
 
 from . import __version__
 from .system import health, processes
-from .network import connectivity, ssl_check
+from .network import connectivity, ssl_check, ports as netports
+from .monitoring import http_check
 
 
 def _cmd_health(args) -> int:
@@ -39,6 +40,18 @@ def _cmd_ssl(args) -> int:
     return 1 if info["expiring_soon"] else 0
 
 
+def _cmd_ports(args) -> int:
+    for p in netports.listening_ports():
+        print(f"{p['port']:>6}  pid={p['pid']}  {p['ip']}")
+    return 0
+
+
+def _cmd_httpcheck(args) -> int:
+    result = http_check.check(args.url, expect=args.expect)
+    print(json.dumps(result))
+    return 0 if result["healthy"] else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sysadmin", description="Sysadmin utilities toolkit")
@@ -63,6 +76,14 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("host")
     s.add_argument("--port", type=int, default=443)
     s.set_defaults(func=_cmd_ssl)
+
+    p = sub.add_parser("ports", help="list listening ports")
+    p.set_defaults(func=_cmd_ports)
+
+    hc = sub.add_parser("httpcheck", help="HTTP endpoint health check")
+    hc.add_argument("url")
+    hc.add_argument("--expect", type=int, default=200)
+    hc.set_defaults(func=_cmd_httpcheck)
 
     return parser
 
