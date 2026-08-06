@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sysadmin-utils"
+version = "0.1.0"
+description = "Python utilities for infrastructure automation, reporting, and monitoring."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "lacerta15", email = "vierlacerta@gmail.com" }]
+keywords = ["sysadmin", "devops", "monitoring", "automation", "linux"]
+dependencies = [
+    "psutil>=5.9.0",
+    "requests>=2.31.0",
+    "paramiko>=3.0.0",
+    "PyYAML>=6.0",
+]
+
+[project.scripts]
+sysadmin = "sysadmin_utils.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["sysadmin_utils*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"

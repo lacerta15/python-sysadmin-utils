@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Reports produced by tools
+disk_report_*.json
+health_report_*.json
+*.log
+log.txt
+
+# Editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# scratch
+*.tmp
+_t2.txt
