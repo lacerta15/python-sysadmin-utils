@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 from collections import Counter
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 LEVELS = ("EMERG", "ALERT", "CRIT", "ERROR", "WARN", "WARNING", "INFO", "DEBUG")
 _LEVEL_RE = re.compile("|".join(LEVELS))
