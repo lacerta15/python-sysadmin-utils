@@ -6,7 +6,7 @@ import json
 import sys
 
 from . import __version__
-from .system import health, processes
+from .system import health, processes, uptime
 from .network import connectivity, ssl_check, ports as netports
 from .monitoring import http_check
 
@@ -52,6 +52,11 @@ def _cmd_httpcheck(args) -> int:
     return 0 if result["healthy"] else 1
 
 
+def _cmd_uptime(args) -> int:
+    print(f"up {uptime.uptime_human()} (since {uptime.boot_time():%Y-%m-%d %H:%M})")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sysadmin", description="Sysadmin utilities toolkit")
@@ -84,6 +89,9 @@ def build_parser() -> argparse.ArgumentParser:
     hc.add_argument("url")
     hc.add_argument("--expect", type=int, default=200)
     hc.set_defaults(func=_cmd_httpcheck)
+
+    u = sub.add_parser("uptime", help="show system uptime")
+    u.set_defaults(func=_cmd_uptime)
 
     return parser
 
