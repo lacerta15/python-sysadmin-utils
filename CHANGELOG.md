@@ -3,6 +3,19 @@
 All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.0] - 2026-08-06
+
+### Added
+- Core: retry/backoff decorator, timing helpers, humanize (bytes/duration),
+  central overridable defaults.
+- System: detailed CPU, memory, network I/O, hardware sensors, uptime modules.
+- Security module: file integrity checksums + manifest diff, auth-log failed
+  login parser, listening-port allowlist audit.
+- Monitoring module: Prometheus textfile exposition writer and HTTP health check.
+- Backup: rsync mirror wrapper with dry-run.
+- CLI: new `ports` and `httpcheck` subcommands.
+- Expanded test suite across new modules.
+
 ## [0.1.0] - 2026-08-06
 
 ### Added
