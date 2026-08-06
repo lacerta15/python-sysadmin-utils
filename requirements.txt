@@ -1,3 +1,4 @@
+# Runtime dependencies (see pyproject.toml for the authoritative list)
 psutil>=5.9.0
 requests>=2.31.0
 paramiko>=3.0.0
