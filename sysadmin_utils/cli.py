@@ -12,6 +12,7 @@ from .monitoring import http_check
 from .logs import analyzer
 from .reporting import collector, formatters
 from .checks import runner
+from .remote import inventory as rinv, pool as rpool
 
 
 def _cmd_health(args) -> int:
@@ -101,6 +102,17 @@ def _cmd_checks(args) -> int:
     return 0 if runner.all_passing(results) else 1
 
 
+def _cmd_remote_run(args) -> int:
+    hosts = rinv.parse_inventory(args.inventory, default_user=args.user)
+    results = rpool.run_on_hosts(hosts, args.command)
+    for host, r in results.items():
+        flag = "OK " if r["ok"] else "FAIL"
+        print(f"[{flag}] {host}: {r['stdout'] or r['stderr']}")
+    summary = rpool.summarize(results)
+    print(f"-- {summary['ok']}/{summary['total']} ok, {summary['failed']} failed")
+    return 0 if summary["failed"] == 0 else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sysadmin", description="Sysadmin utilities toolkit")
@@ -152,6 +164,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     ck = sub.add_parser("checks", help="run threshold checks")
     ck.set_defaults(func=_cmd_checks)
+
+    rr = sub.add_parser("remote-run", help="run a command across hosts via SSH")
+    rr.add_argument("inventory")
+    rr.add_argument("command")
+    rr.add_argument("--user", default="root")
+    rr.set_defaults(func=_cmd_remote_run)
 
     return parser
 
