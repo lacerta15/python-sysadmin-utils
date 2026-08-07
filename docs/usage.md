@@ -62,3 +62,30 @@ From the CLI:
 sysadmin report --format markdown
 sysadmin checks           # exit code 1 if any threshold is exceeded
 ```
+
+## Running a command across hosts
+
+Create an inventory file (`hosts.txt`):
+
+```
+# production
+web01
+admin@db01
+```
+
+Then run:
+
+```bash
+sysadmin remote-run hosts.txt "uptime"
+```
+
+Programmatic use with the injectable runner (handy for tests):
+
+```python
+from sysadmin_utils.remote import pool
+
+results = pool.run_on_hosts(
+    [{"user": "root", "host": "web01"}], "df -h"
+)
+print(pool.summarize(results))
+```
