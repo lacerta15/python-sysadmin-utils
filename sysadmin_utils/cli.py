@@ -13,6 +13,9 @@ from .logs import analyzer
 from .reporting import collector, formatters
 from .checks import runner
 from .remote import inventory as rinv, pool as rpool
+from .monitoring import exporter
+from .checks import watch
+from .notify import slack
 
 
 def _cmd_health(args) -> int:
@@ -113,6 +116,26 @@ def _cmd_remote_run(args) -> int:
     return 0 if summary["failed"] == 0 else 1
 
 
+def _cmd_exporter(args) -> int:
+    print(f"Serving metrics on http://0.0.0.0:{args.port}/metrics (Ctrl+C to stop)")
+    try:
+        exporter.serve(args.port)
+    except KeyboardInterrupt:
+        print("stopped")
+    return 0
+
+
+def _cmd_watch(args) -> int:
+    notifier = None
+    if args.slack_webhook:
+        notifier = lambda msg: slack.send(args.slack_webhook, msg)  # noqa: E731
+    results = watch.run_once(notifier=notifier)
+    for r in results:
+        flag = "OK " if r["ok"] else "FAIL"
+        print(f"[{flag}] {r['check']:5s} {r['value']:.1f} (max {r['threshold']})")
+    return 0 if all(r["ok"] for r in results) else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sysadmin", description="Sysadmin utilities toolkit")
@@ -170,6 +193,14 @@ def build_parser() -> argparse.ArgumentParser:
     rr.add_argument("command")
     rr.add_argument("--user", default="root")
     rr.set_defaults(func=_cmd_remote_run)
+
+    ex = sub.add_parser("exporter", help="serve Prometheus metrics over HTTP")
+    ex.add_argument("--port", type=int, default=9877)
+    ex.set_defaults(func=_cmd_exporter)
+
+    w = sub.add_parser("watch", help="run checks once, optionally alert to Slack")
+    w.add_argument("--slack-webhook", default=None)
+    w.set_defaults(func=_cmd_watch)
 
     return parser
 
