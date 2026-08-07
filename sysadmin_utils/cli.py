@@ -10,6 +10,8 @@ from .system import health, processes, uptime, sensors
 from .network import connectivity, ssl_check, ports as netports
 from .monitoring import http_check
 from .logs import analyzer
+from .reporting import collector, formatters
+from .checks import runner
 
 
 def _cmd_health(args) -> int:
@@ -80,6 +82,25 @@ def _cmd_logscan(args) -> int:
     return 0
 
 
+def _cmd_report(args) -> int:
+    report = collector.collect_report()
+    if args.format == "json":
+        print(formatters.to_json(report))
+    elif args.format == "markdown":
+        print(formatters.to_markdown(report))
+    else:
+        print(formatters.to_text(report))
+    return 0 if report["health_status"]["overall"] == "OK" else 1
+
+
+def _cmd_checks(args) -> int:
+    results = runner.run_checks()
+    for r in results:
+        flag = "OK " if r["ok"] else "FAIL"
+        print(f"[{flag}] {r['check']:5s} {r['value']:.1f} (max {r['threshold']})")
+    return 0 if runner.all_passing(results) else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sysadmin", description="Sysadmin utilities toolkit")
@@ -123,6 +144,14 @@ def build_parser() -> argparse.ArgumentParser:
     ls.add_argument("path")
     ls.add_argument("--top", type=int, default=5)
     ls.set_defaults(func=_cmd_logscan)
+
+    rep = sub.add_parser("report", help="consolidated system report")
+    rep.add_argument("--format", choices=["text", "json", "markdown"],
+                     default="text")
+    rep.set_defaults(func=_cmd_report)
+
+    ck = sub.add_parser("checks", help="run threshold checks")
+    ck.set_defaults(func=_cmd_checks)
 
     return parser
 
