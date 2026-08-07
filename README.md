@@ -71,3 +71,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and the [CHANGELOG](CHANGELOG.md).
 ## License
 
 Released under the [MIT License](LICENSE).
+
