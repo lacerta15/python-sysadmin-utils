@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 - Remote module: SSH inventory parser, single-host runner (injectable executor),
   multi-host fan-out with aggregation, and a `remote-run` CLI command.
+- Monitoring: Prometheus HTTP exporter, threshold watcher, and Slack alerting
+  via an injectable notifier (`exporter` and `watch` CLI commands).
 - Reporting module: consolidated report collector plus text/JSON/Markdown formatters.
 - Checks module: config-driven threshold check runner with pass/fail summary.
 - CLI: new `report`, `checks`, `uptime`, `sensors` and `logscan` subcommands.
