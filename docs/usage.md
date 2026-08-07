@@ -89,3 +89,18 @@ results = pool.run_on_hosts(
 )
 print(pool.summarize(results))
 ```
+
+## Metrics exporter and alerting
+
+Expose metrics for Prometheus to scrape:
+
+```bash
+sysadmin exporter --port 9877
+curl localhost:9877/metrics
+```
+
+Run checks once and alert to Slack if any threshold is breached:
+
+```bash
+sysadmin watch --slack-webhook "https://hooks.slack.com/services/XXX"
+```
