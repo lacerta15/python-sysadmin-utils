@@ -46,3 +46,19 @@ from sysadmin_utils.backup import archive
 path = archive.create_archive("/etc", "/backups", name="etc")
 removed = archive.prune("/backups", keep=7)
 ```
+
+## Consolidated report
+
+```python
+from sysadmin_utils.reporting import collector, formatters
+
+report = collector.collect_report()
+print(formatters.to_markdown(report))
+```
+
+From the CLI:
+
+```bash
+sysadmin report --format markdown
+sysadmin checks           # exit code 1 if any threshold is exceeded
+```
