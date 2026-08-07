@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.0] - 2026-08-07
+
+### Added
+- Reporting module: consolidated report collector plus text/JSON/Markdown formatters.
+- Checks module: config-driven threshold check runner with pass/fail summary.
+- CLI: new `report`, `checks`, `uptime`, `sensors` and `logscan` subcommands.
+
 ## [0.2.0] - 2026-08-06
 
 ### Added
